@@ -9,8 +9,6 @@ const methodOverride = require('method-override')
 const db = require('./models')
 
 
-
-
 app.use(methodOverride('_method'))
 
 app.set('view engine', 'handlebars')
@@ -32,12 +30,10 @@ app.use((req, res, next) => {
   next()
 })
 
-app.get('/', (req, res) => {
-  res.send('Hello World')
-})
 
+app.use('/', require('./routes/home'))
 app.use('/users', require('./routes/user'))
-
+app.use('/todos', require('./routes/todo'))
 
 app.listen(3000, () => {
   db.sequelize.sync()
