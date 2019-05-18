@@ -6,9 +6,7 @@ const db = require('../models')
 const Todo = db.Todo
 
 router.get('/', authenticated, (req, res) => {
-  // res.render('index')
-  Todo.findAll().then(todos => {
-    // if (err) console.log(err)
+  Todo.findAll({ where: { userId: req.user.id } }).then(todos => {
     res.render('index', { todos: todos })
   })
 })

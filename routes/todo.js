@@ -10,10 +10,11 @@ router.get('/new', authenticated, (req, res) => {
 })
 
 router.post('/new', authenticated, (req, res) => {
+  console.log(req.user)
   const newTodo = new Todo({
     name: req.body.name,
     done: false,
-    UserId: req.user._id,
+    userId: req.user.id,
   })
 
   newTodo.save().then(todo => {
@@ -23,16 +24,49 @@ router.post('/new', authenticated, (req, res) => {
   })
 })
 
+
+router.get('/detail/:id', authenticated, (req, res) => {
+  Todo.findOne({ where: { id: req.params.id } }).then(todo => {
+    return res.render('detail', { todo: todo })
+  }).catch(err => {
+    console.log(err)
+  })
+})
+
 router.get('/edit/:id', authenticated, (req, res) => {
-  res.render('edit')
+  Todo.findOne({ where: { id: req.params.id } }).then(todo => {
+    return res.render('edit', { todo: todo })
+  }).catch(err => {
+    console.log(err)
+  })
 })
 
-router.post('/edit/:id', authenticated, (req, res) => {
-  res.send('edit!')
+router.put('/edit/:id', authenticated, (req, res) => {
+  Todo.findOne({ where: { id: req.params.id } }).then(todo => {
+    todo.name = req.body.name
+    if (req.body.done) {
+      todo.done = true
+    } else {
+      todo.done = false
+    }
+    todo.save()
+    return res.redirect('/')
+  }).catch(err => {
+    console.log(err)
+  })
 })
 
-router.get('/delete/:id', authenticated, (req, res) => {
-  res.send('delete')
+router.delete('/delete/:id', authenticated, (req, res) => {
+  Todo.destroy({
+    where: {
+      userId: req.user.id,
+      id: req.params.id
+    }
+  }).then(todo => {
+    return res.redirect('/')
+  }).catch(err => {
+    console.log(err)
+  })
 })
 
 
